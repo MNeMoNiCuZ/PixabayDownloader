@@ -1,0 +1,8 @@
+gradio
+requests
+python-dotenv
+Pillow
+fuzzywuzzy
+python-Levenshtein
+tqdm
+pyperclip
