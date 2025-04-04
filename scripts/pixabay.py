@@ -75,7 +75,7 @@ def parse_args():
     parser.add_argument('-q', '--query', type=str,
                         help='Search term for images (required unless --resume is used)')
     parser.add_argument('-o', '--output-dir', type=str, 
-                        help='Custom output directory (default: Output/YYYY-MM-DD/search_term)')
+                        help='Custom output directory (default: output/YYYY-MM-DD/search_term)')
     parser.add_argument('-n', '--max-images', type=int, default=0, 
                         help='Maximum number of images to download (default: 0, which means all available images)')
     
@@ -717,7 +717,7 @@ def main():
         now = datetime.now()
         date_dir = now.strftime("%Y-%m-%d")
         query_dir = clean_directory_name(args.query if args.query else "general")
-        output_dir = os.path.join("Output", date_dir, query_dir)
+        output_dir = os.path.join("output", date_dir, query_dir)
     
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
