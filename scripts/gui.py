@@ -40,7 +40,7 @@ def download_images(
         now = datetime.now()
         date_dir = now.strftime("%Y-%m-%d")
         query_dir = clean_directory_name(query)
-        output_dir = os.path.join("Output", date_dir, query_dir)
+        output_dir = os.path.join("output", date_dir, query_dir)
         os.makedirs(output_dir, exist_ok=True)
         
         # Create logs directory
