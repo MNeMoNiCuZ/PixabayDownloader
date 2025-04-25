@@ -218,11 +218,11 @@ def download_all_images(client, search_params, output_dir, max_images=0, quality
     downloaded_count = 0
     page = 1
     total_hits = 0
-    rate_limit_remaining = 100
-    rate_limit_reset = 60
     failed_downloads = []
     error_types = Counter()
     downloaded_ids = []
+    last_request_time = 0
+    min_request_delay = 0.05  # Small delay to prevent hammering
     
     # Store original search parameters to use as base for variations
     original_params = search_params.copy()
@@ -355,11 +355,11 @@ def download_all_images(client, search_params, output_dir, max_images=0, quality
                 current_params['page'] = page
                 current_params['per_page'] = current_page_size
                 
-                # Check rate limit
-                if rate_limit_remaining < 5:
-                    wait_time = rate_limit_reset + 1
-                    logger.info(f"Rate limit almost reached. Waiting {wait_time} seconds...")
-                    time.sleep(wait_time)
+                # Small delay to prevent hammering the API
+                current_time = time.time()
+                time_since_last_request = current_time - last_request_time
+                if time_since_last_request < min_request_delay:
+                    time.sleep(min_request_delay - time_since_last_request)
                 
                 # Make the API request
                 if verbose:
@@ -367,12 +367,16 @@ def download_all_images(client, search_params, output_dir, max_images=0, quality
                 
                 try:
                     response = requests.get(API_URL, params=current_params)
+                    last_request_time = time.time()
+                    
+                    if response.status_code == 429:
+                        # Get rate limit info from headers
+                        reset_time = int(response.headers.get('X-RateLimit-Reset', 5))
+                        logger.warning(f"Rate limit exceeded. Waiting {reset_time} seconds...")
+                        time.sleep(reset_time)
+                        continue
+                    
                     response.raise_for_status()
-                    
-                    # Update rate limit info
-                    rate_limit_remaining = int(response.headers.get('X-RateLimit-Remaining', 100))
-                    rate_limit_reset = int(response.headers.get('X-RateLimit-Reset', 60))
-                    
                     results = response.json()
                     hits = results.get("hits", [])
                     

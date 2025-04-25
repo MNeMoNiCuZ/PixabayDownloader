@@ -197,7 +197,7 @@ def create_interface():
 if __name__ == "__main__":
     interface = create_interface()
     interface.launch(
-        server_name="0.0.0.0",  # Allow external connections
-        show_api=True,         # Show API docs
-        share=True             # Create public URL for sharing
+        server_name="127.0.0.1",  # Only allow local connections
+        show_api=False,          # Don't show API docs
+        share=False             # Don't create public URL
     ) 
